@@ -7,8 +7,17 @@ router
 engine
 1. ServeHTTP 执行时，handlers如何捕获错误呢？某个中间的handler执行错误，应该中断才对
 
+支持http2, http3需要做什么
+
 ## todo
 
 router
 1. 支持 group
 
+支持http2, http3
+
+支持更多的bind
+
+context
+1. 支持next
+2. 处理中间错误
