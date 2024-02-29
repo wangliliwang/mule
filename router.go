@@ -1,6 +1,8 @@
 package mule
 
-import "strings"
+import (
+	"strings"
+)
 
 type IRouter interface {
 	// Add
@@ -20,9 +22,10 @@ func NewRouter() IRouter {
 	return &Router{pathHandlerMap: make(map[string]map[string]HandlersChain)}
 }
 
-func (r *Router) Handle(s string, s2 string, handleFunc ...HandleFunc) IRouter {
-	//TODO implement me
-	panic("implement me")
+func (r *Router) Handle(method string, p string, handleFunc ...HandleFunc) IRouter {
+	pathMap := r.initPathMap(p)
+	pathMap[method] = handleFunc
+	return r
 }
 
 func (r *Router) initPathMap(p string) map[string]HandlersChain {
@@ -35,15 +38,11 @@ func (r *Router) initPathMap(p string) map[string]HandlersChain {
 }
 
 func (r *Router) Get(p string, handleFunc ...HandleFunc) IRouter {
-	pathMap := r.initPathMap(p)
-	pathMap["get"] = handleFunc
-	return r
+	return r.Handle("get", p, handleFunc...)
 }
 
 func (r *Router) Post(p string, handleFunc ...HandleFunc) IRouter {
-	pathMap := r.initPathMap(p)
-	pathMap["post"] = handleFunc
-	return r
+	return r.Handle("post", p, handleFunc...)
 }
 
 func (r *Router) MatchHandlersChain(method, p string) (HandlersChain, bool) {

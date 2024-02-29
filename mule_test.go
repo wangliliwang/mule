@@ -16,10 +16,10 @@ func testHandler1(ctx *Context) {
 	req := &handler1Req{}
 	parseErr := ctx.ParseQuery(req)
 	if parseErr != nil {
-		ctx.SetResponse(http.StatusBadRequest, "application/json", []byte(parseErr.Error()))
+		ctx.SetResponse(http.StatusBadRequest, "application/json", parseErr.Error())
 		return
 	}
-	ctx.SetResponse(http.StatusOK, "application/json", []byte(fmt.Sprintf(`{"name": "%s"}`, req.Name)))
+	ctx.SetResponse(http.StatusOK, "application/json", fmt.Sprintf(`{"name": "%s"}`, req.Name))
 }
 
 type handler2Req struct {
@@ -32,10 +32,10 @@ func testHandler2(ctx *Context) {
 	parseErr := ctx.ParseJSON(req)
 	log.Printf("in handler2 %+v\n", req)
 	if parseErr != nil {
-		ctx.SetResponse(http.StatusBadRequest, "application/json", []byte(parseErr.Error()))
+		ctx.SetResponse(http.StatusBadRequest, "application/json", parseErr.Error())
 		return
 	}
-	ctx.SetResponse(http.StatusOK, "application/json", []byte(fmt.Sprintf(`{"name": "%s"}`, req.Name)))
+	ctx.SetResponse(http.StatusOK, "application/json", fmt.Sprintf(`{"name": "%s"}`, req.Name))
 }
 
 func TestApp(t *testing.T) {

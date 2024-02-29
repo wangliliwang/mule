@@ -24,16 +24,16 @@ type App struct {
 	IRouter
 }
 
-func (a *App) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+func (a *App) ServeHTTP(response *Response, request *Request) {
 	ctx := &Context{
-		req:       request,
-		resWriter: writer,
+		request:  request,
+		response: response,
 	}
-	method := ctx.req.Method
-	rPath := ctx.req.URL.Path
+	method := ctx.request.Method
+	rPath := ctx.request.Path
 	handlersChain, ok := a.MatchHandlersChain(method, rPath)
 	if !ok {
-		ctx.SetResponse(http.StatusNotFound, "application/json", []byte{})
+		ctx.SetResponse(http.StatusNotFound, "application/json", "")
 	}
 	for _, handler := range handlersChain {
 		handler(ctx)
@@ -43,7 +43,8 @@ func (a *App) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 func (a *App) Run(addr string) error {
 	fmt.Println(muleImage)
 	log.Printf("strong mule runs on %+v\n", addr)
-	return http.ListenAndServe(addr, a)
+	svr := NewServer(addr, a)
+	return svr.ListenAndServe()
 }
 
 type HandleFunc func(ctx *Context)

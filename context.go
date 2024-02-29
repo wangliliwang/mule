@@ -5,36 +5,55 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-playground/validator/v10"
-	"io"
-	"net/http"
 	"time"
 )
 
 type Context struct {
-	req       *http.Request
-	resWriter http.ResponseWriter
+	request  *Request
+	response *Response
 }
 
 func (c *Context) Deadline() (deadline time.Time, ok bool) {
-	return c.req.Context().Deadline()
+	//TODO implement me
+	panic("implement me")
 }
 
 func (c *Context) Done() <-chan struct{} {
-	return c.req.Context().Done()
+	//TODO implement me
+	panic("implement me")
 }
 
 func (c *Context) Err() error {
-	return c.req.Context().Err()
+	//TODO implement me
+	panic("implement me")
 }
 
 func (c *Context) Value(key any) any {
-	return c.req.Context().Value(key)
+	//TODO implement me
+	panic("implement me")
 }
 
-func (c *Context) SetResponse(httpCode int, contentType string, content []byte) {
-	c.resWriter.WriteHeader(httpCode)
-	c.resWriter.Header().Set("Content-Type", contentType)
-	c.resWriter.Write(content)
+//func (c *Context) Deadline() (deadline time.Time, ok bool) {
+//	return c.request.Context().Deadline()
+//}
+//
+//func (c *Context) Done() <-chan struct{} {
+//	return c.request.Context().Done()
+//}
+//
+//func (c *Context) Err() error {
+//	return c.request.Context().Err()
+//}
+//
+//func (c *Context) Value(key any) any {
+//	return c.request.Context().Value(key)
+//}
+
+func (c *Context) SetResponse(httpCode int, contentType, content string) {
+	c.response.SetStatusCode(httpCode)
+	c.response.SetHeader("Content-Type", contentType)
+	c.response.SetBody(content)
+	c.response.Flush()
 }
 
 func (c *Context) parse(obj any, raw []byte) error {
@@ -52,7 +71,7 @@ func (c *Context) parse(obj any, raw []byte) error {
 
 // TODO(wangli) fix me 1. 支持传入多个值 2. 支持query tag
 func (c *Context) ParseQuery(obj any) error {
-	values := c.req.URL.Query()
+	values := c.request.Query
 	singleValues := make(map[string]string)
 	for key, value := range values {
 		if len(value) > 0 {
@@ -67,14 +86,7 @@ func (c *Context) ParseQuery(obj any) error {
 }
 
 func (c *Context) ParseJSON(obj any) error {
-	if c.req.Body == nil {
-		return errors.New("invalid request")
-	}
-	bd, readErr := io.ReadAll(c.req.Body)
-	if readErr != nil {
-		return readErr
-	}
-	return c.parse(obj, bd)
+	return c.parse(obj, []byte(c.request.Body))
 }
 
 var validate = validator.New()

@@ -7,6 +7,9 @@ router
 engine
 1. ServeHTTP 执行时，handlers如何捕获错误呢？某个中间的handler执行错误，应该中断才对
 
+server
+1. 如何设置conn read/write的ddl
+
 支持http2, http3需要做什么
 
 ## todo
@@ -21,3 +24,5 @@ router
 context
 1. 支持next
 2. 处理中间错误
+
+开发net包的组件
