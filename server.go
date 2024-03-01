@@ -73,7 +73,7 @@ func NewRequest(conn net.Conn) *Request {
 	// 定义正则表达式来匹配HTTP请求的首行、头部和主体
 	requestLineRegex := regexp.MustCompile(`^(\w+)\s(.*?)(\?.*)?\sHTTP/\d\.\d`)
 	headerRegex := regexp.MustCompile(`^([\w-]+):\s(.*?)$`)
-	bodyRegex := regexp.MustCompile(`\r\n\r\n(.*)$`)
+	bodyRegex := regexp.MustCompile(`\r\n\r\n((.|\n)*)$`)
 
 	// 使用正则表达式解析HTTP请求内容
 	lines := strings.Split(reqContent, "\r\n")
@@ -155,8 +155,7 @@ func (r *Response) Flush() {
 	for key, value := range r.headers {
 		resp = append(resp, fmt.Sprintf("%s: %s", key, value))
 	}
-	resp = append(resp, "\r\n\r\n")
-	resp = append(resp, r.body)
+	resp = append(resp, "\r\n"+r.body)
 
 	// write
 	r.conn.Write([]byte(strings.Join(resp, "\r\n")))
